@@ -1,3 +1,5 @@
 #!/bin/bash
 
-echo this script name is $0
+echo running client on port $1
+
+PORT=$1 npm run start

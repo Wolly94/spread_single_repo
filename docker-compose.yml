@@ -1,0 +1,13 @@
+version: "3.3"
+services:
+    web:
+        build: server/.
+        ports:
+            - "9010:9010"
+        command: "9010"
+    ui:
+        build: client/.
+        ports:
+            - "9000:9000"
+        command: "9000"
+        stdin_open: true
