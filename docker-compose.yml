@@ -3,11 +3,15 @@ services:
     web:
         build: server/.
         ports:
-            - "9010:9010"
-        command: "9010"
+            - "8010:8010"
+        environment:
+            - port=8010
+        command: "npm run start"
     ui:
         build: client/.
         ports:
-            - "9000:9000"
-        command: "9000"
+            - "8000:8000"
+        environment:
+            - PORT=8000
+        command: "npm run start"
         stdin_open: true

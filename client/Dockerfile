@@ -7,4 +7,4 @@ COPY . .
 RUN npm install || 1
 ##RUN npm run build
 
-ENTRYPOINT ["./run_client.sh"]
+ENTRYPOINT []

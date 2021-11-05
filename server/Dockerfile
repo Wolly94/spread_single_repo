@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-RUN npm install || 1
+RUN npm install
 RUN npm run build
 
-ENTRYPOINT ["./run_server.sh"]
+ENTRYPOINT []
