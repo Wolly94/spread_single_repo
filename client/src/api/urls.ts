@@ -7,9 +7,21 @@ const baseUrl = () => {
         return 'http://3.128.245.168:8765/'
     } else if (process.env.NODE_ENV === 'development') {
         console.log('run development')
-        return 'http://localhost:8765/'
+        return (
+            'http://' +
+            process.env.WEB_API_BASE_URL +
+            ':' +
+            process.env.WEB_API_PORT +
+            '/'
+        )
     }
-    return 'http://localhost:8765/'
+    return (
+        'http://' +
+        process.env.WEB_API_BASE_URL +
+        ':' +
+        process.env.WEB_API_PORT +
+        '/'
+    )
 }
 
 const API_PATH = {
