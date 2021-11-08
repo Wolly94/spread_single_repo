@@ -1,5 +1,8 @@
 version: "3.3"
 services:
+    common:
+        build: spread_game/.
+        command: "npm install"
     web:
         build: server/.
         ports:
@@ -7,6 +10,8 @@ services:
         environment:
             - PORT=4001
         command: "npm run start"
+        depends_on:
+            - common
     ui:
         build: client/.
         ports:
@@ -14,4 +19,6 @@ services:
         environment:
             - PORT=3001
         command: "npm run start"
+        depends_on:
+            - common
         stdin_open: true

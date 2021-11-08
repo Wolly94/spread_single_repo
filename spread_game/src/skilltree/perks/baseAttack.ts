@@ -1,4 +1,4 @@
-import { formatDescription } from "../../skilltree/utils";
+import { formatDescription } from "../utils";
 import {
     AttachProps,
     TimedProps,
