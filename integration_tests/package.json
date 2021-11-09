@@ -4,10 +4,8 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "setup": "./../client/run_client.sh 9000",
         "build": "tsc",
-        "test": "react-scripts test --testPathPattern=.*e2e.test.js$",
-        "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache"
+        "test": "jest test --maxWorkers=1$"
     },
     "author": "",
     "license": "ISC",

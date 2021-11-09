@@ -7,14 +7,9 @@ import {
     clickButtonStartGame,
 } from "./helper/lobbyHelper";
 import { getLatestUrl } from "./helper/pageHelper";
-import {
-    baseClientUrl,
-    clickButtonPlayAi,
-    runClient,
-} from "./helper/rootHelper";
-import { ChildProcess } from "child_process";
+import { baseClientUrl, clickButtonPlayAi } from "./helper/rootHelper";
 
-const puppeteer = require("puppeteer");
+import puppeteer from "puppeteer";
 
 describe("App asjkdsad", () => {
     let browser: Puppeteer.Browser;
