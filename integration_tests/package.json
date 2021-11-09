@@ -1,0 +1,14 @@
+{
+  "name": "integration_tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "react-scripts test --testPathPattern=.*e2e.test.js$"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "react-scripts": "^4.0.3"
+  }
+}
