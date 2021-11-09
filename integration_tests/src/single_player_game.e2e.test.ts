@@ -11,24 +11,30 @@ import { baseClientUrl, clickButtonPlayAi } from "./helper/rootHelper";
 
 import puppeteer from "puppeteer";
 
-describe("two players", () => {
+describe("single player", () => {
     let browser: Puppeteer.Browser;
     let page: Puppeteer.Page;
-    let page2: Puppeteer.Page;
 
     const baseUrl = baseClientUrl();
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
         page = await browser.newPage();
-        page2 = await browser.newPage();
     });
 
     it("play ai", async () => {
         await page.goto(baseUrl);
-        await page2.goto(baseUrl); // but with differen port!
 
-        // TODO implement rest
+        await clickButtonPlayAi(page);
+        expect(await getLatestUrl(browser)).not.toBe(baseUrl);
+
+        await clickButtonSelectMap(page);
+        await clickButtonStartGame(page);
+        await delay(100); // wait until rendered
+        await clickButtonDownloadReplay(page);
+        await clickButtonDisconnect(page);
+
+        expect(await getLatestUrl(browser)).toBe(baseUrl);
     });
 
     afterAll(() => {
