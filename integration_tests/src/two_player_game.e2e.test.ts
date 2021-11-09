@@ -7,7 +7,12 @@ import {
     clickButtonStartGame,
 } from "./helper/lobbyHelper";
 import { getLatestUrl } from "./helper/pageHelper";
-import { clickButtonPlayAi } from "./helper/rootHelper";
+import {
+    baseClientUrl,
+    clickButtonPlayAi,
+    runClient,
+} from "./helper/rootHelper";
+import { ChildProcess } from "child_process";
 
 const puppeteer = require("puppeteer");
 
@@ -15,7 +20,7 @@ describe("App asjkdsad", () => {
     let browser: Puppeteer.Browser;
     let page: Puppeteer.Page;
 
-    const baseUrl = "http://localhost:3000/";
+    const baseUrl = baseClientUrl();
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
@@ -37,5 +42,7 @@ describe("App asjkdsad", () => {
         expect(await getLatestUrl(browser)).toBe(baseUrl);
     });
 
-    afterAll(() => browser.close());
+    afterAll(() => {
+        browser.close();
+    });
 });

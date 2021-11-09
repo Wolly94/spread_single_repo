@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "setup": "./../client/run_client.sh 9000",
         "build": "tsc",
         "test": "react-scripts test --testPathPattern=.*e2e.test.js$",
         "test:debug": "react-scripts --inspect-brk test --runInBand --no-cache"
@@ -18,6 +19,7 @@
     },
     "dependencies": {
         "@types/puppeteer": "^5.4.4",
+        "dotenv": "^10.0.0",
         "jest-puppeteer": "^6.0.0",
         "puppeteer": "^11.0.0"
     }
