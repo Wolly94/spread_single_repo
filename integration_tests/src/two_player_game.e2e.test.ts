@@ -1,9 +1,11 @@
-//import puppeteer from "puppeteer";
+import Puppeteer from "puppeteer";
+import { getLatestPage } from "./helper/pageHelper";
+
 const puppeteer = require("puppeteer");
 
 describe("App asjkdsad", () => {
-    let browser;
-    let page;
+    let browser: Puppeteer.Browser;
+    let page: Puppeteer.Page;
 
     beforeAll(async () => {
         browser = await puppeteer.launch();
@@ -18,9 +20,16 @@ describe("App asjkdsad", () => {
         //});
         const buttonText = "Play against AI";
         const [button] = await page.$x(
-            "//div[@class='elements']/button[contains(., '" + buttonText + "')]"
+            "//button[contains(., '" + buttonText + "')]"
         );
-        expect(button.textContent).toContain(button);
+
+        await button.click();
+        var json = await button.getProperties();
+
+        var currentPage = await getLatestPage(browser);
+        var x = await currentPage.content();
+        var y = 10;
+        //expect(button.textContent).toContain(buttonText);
 
         //await page.waitForSelector(".App-welcome-text");
         //const text = await page.$eval(".App-welcome-text", (e) => e.textContent);
