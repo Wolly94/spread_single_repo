@@ -1,5 +1,13 @@
 import Puppeteer from "puppeteer";
-import { getLatestPage } from "./helper/pageHelper";
+import { delay } from "./helper/baseHelper";
+import {
+    clickButtonDisconnect,
+    clickButtonDownloadReplay,
+    clickButtonSelectMap,
+    clickButtonStartGame,
+} from "./helper/lobbyHelper";
+import { getLatestUrl } from "./helper/pageHelper";
+import { clickButtonPlayAi } from "./helper/rootHelper";
 
 const puppeteer = require("puppeteer");
 
@@ -7,33 +15,26 @@ describe("App asjkdsad", () => {
     let browser: Puppeteer.Browser;
     let page: Puppeteer.Page;
 
+    const baseUrl = "http://localhost:3000/";
+
     beforeAll(async () => {
         browser = await puppeteer.launch();
         page = await browser.newPage();
     });
 
-    it("contains buttons", async () => {
-        await page.goto("http://localhost:3000");
-        //await page.evaluate(() => {
-        //    [...document.querySelectorAll('.elements button')]
-        //        .find(element => element.textContent === 'Play against AI').click();
-        //});
-        const buttonText = "Play against AI";
-        const [button] = await page.$x(
-            "//button[contains(., '" + buttonText + "')]"
-        );
+    it("play ai", async () => {
+        await page.goto(baseUrl);
 
-        await button.click();
-        var json = await button.getProperties();
+        await clickButtonPlayAi(page);
+        expect(await getLatestUrl(browser)).not.toBe(baseUrl);
 
-        var currentPage = await getLatestPage(browser);
-        var x = await currentPage.content();
-        var y = 10;
-        //expect(button.textContent).toContain(buttonText);
+        await clickButtonSelectMap(page);
+        await clickButtonStartGame(page);
+        await delay(100); // wait until rendered
+        await clickButtonDownloadReplay(page);
+        await clickButtonDisconnect(page);
 
-        //await page.waitForSelector(".App-welcome-text");
-        //const text = await page.$eval(".App-welcome-text", (e) => e.textContent);
-        //expect(text).toContain("Edit src/App.js and save to reload.");
+        expect(await getLatestUrl(browser)).toBe(baseUrl);
     });
 
     afterAll(() => browser.close());
