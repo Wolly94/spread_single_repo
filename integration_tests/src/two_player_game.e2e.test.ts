@@ -11,7 +11,7 @@ import { baseClientUrl, clickButtonPlayAi } from "./helper/rootHelper";
 
 import puppeteer from "puppeteer";
 
-describe("App asjkdsad", () => {
+describe("single player", () => {
     let browser: Puppeteer.Browser;
     let page: Puppeteer.Page;
 
