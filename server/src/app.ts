@@ -1,14 +1,14 @@
 import cors from "cors";
 import express from "express";
-import { Server } from "http"
+import { Server } from "http";
 import { registerUser } from "./registration/registrationHandler";
 import FindGameServer from "./socketServers/findGameServer";
 import AllGameServerHandler from "./socketServers/gameServerHandler";
 import { baseUrl } from "./socketServers/socketServer";
 
 export interface App {
-    close: () => void,
-    server: Server
+    close: () => void;
+    server: Server;
 }
 
 export const createAndStartServer = (
@@ -43,8 +43,10 @@ export const createAndStartServer = (
 
     app.post("/create-game", (req, res) => {
         const data = allGameServerHandler.createGameServer();
-        if (data === null) res.send({ message: "Couldnt create game server" });
-        else res.send(data);
+        if (data === null) {
+            res.statusCode = 400;
+            res.send({ message: "Couldnt create game server" });
+        } else res.send(data);
     });
 
     app.get("/find-game", (req, res) => {
@@ -73,6 +75,6 @@ export const createAndStartServer = (
 
     return {
         close: shutdownFunction,
-        server
+        server,
     };
 };

@@ -32,20 +32,25 @@ describe("parameters for creating app", () => {
             .post("/create-game")
             .send({});
         const responseBody: UrlResponse = response.body;
+
         expect(response.statusCode).toBe(200);
         expect(responseBody.url).toBe("ws://localhost:8002/");
     });
-});
 
-describe("POST /create-game", () => {
-    describe("creating too many games should throw", () => {
-        test("should respond with a 200 status code", async () => {
-            const app = createAndStartServer(8000, 8001, 8002, 8003);
-            // const response = await request(app).post("/users").send({
-            //    username: "username",
-            //    password: "password",
-            // });
-            // expect(response.statusCode).toBe(200);
-        });
+    test("more games than game ports", async () => {
+        app = createAndStartServer(8000, 8001, 8002, 8003);
+        const response1 = await request(app.server)
+            .post("/create-game")
+            .send({});
+        const response2 = await request(app.server)
+            .post("/create-game")
+            .send({});
+        const response3 = await request(app.server)
+            .post("/create-game")
+            .send({});
+
+        expect(response1.statusCode).toBe(200);
+        expect(response2.statusCode).toBe(200);
+        expect(response3.statusCode).toBe(400);
     });
 });
