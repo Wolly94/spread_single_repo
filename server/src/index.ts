@@ -1,49 +1,22 @@
 import dotenv from "dotenv";
-import express from "express";
-import cors from "cors";
-import {
-    createFindGameServer,
-    createGameServer,
-} from "./socketServers/creator";
-import FindGameServerHandler from "./socketServers/findGameServerHandler";
-import { registerUser } from "./registration/registrationHandler";
-import { baseUrl } from "./socketServers/socketServer";
+import { createAndStartServer } from "./app";
 
 dotenv.config();
 
-const allowedOrigins = ["http://3.12.88.207", "*"];
+// const allowedOrigins = ["http://3.12.88.207", "*"];
 
-const options: cors.CorsOptions = {
-    origin: allowedOrigins,
+// const options: cors.CorsOptions = {
+//    origin: allowedOrigins,
+// };
+// app.use(cors(options))
+
+const parseIntOrThrow = (envVar: string | undefined): number => {
+    return parseInt(envVar || "", undefined);
 };
 
-const app = express();
-// app.use(cors(options))
-app.use(cors());
-app.use(express.json());
-
-app.get("/", (req, res) => {
-    res.send({ message: "test 2 jenkins" });
-});
-
-app.post("/create-game", (req, res) => {
-    const data = createGameServer();
-    if (data === null) res.send({ message: "Couldnt create game server" });
-    else res.send(data);
-});
-app.get("/find-game", (req, res) => {
-    if (FindGameServerHandler.findGameServer == null) createFindGameServer();
-    const data = FindGameServerHandler.getUrlResponse();
-    res.send(data);
-});
-
-app.get("/token", (req, res) => {
-    const token = registerUser();
-    res.send({ token });
-});
-
-const port = process.env.PORT;
-
-app.listen(port, () => {
-    console.log(`listening on ${baseUrl()}:${port}`);
-});
+const app = createAndStartServer(
+    parseIntOrThrow(process.env.PORT),
+    parseIntOrThrow(process.env.PORT_RANGE_LOWER_BOUND),
+    parseIntOrThrow(process.env.PORT_RANGE_LOWER_BOUND) + 1,
+    parseIntOrThrow(process.env.PORT_RANGE_UPPER_BOUND)
+);
