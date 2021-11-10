@@ -19,8 +19,8 @@ services:
             - "3001:3001"
         environment:
             - PORT=3001
-            - WEB_API_PORT=4001
-            - WEB_API_BASE_URL=localhost
+            - REACT_APP_WEB_API_PORT=4001
+            - REACT_APP_WEB_API_BASE_URL=localhost
         command: "npm run start"
         depends_on:
             - common
