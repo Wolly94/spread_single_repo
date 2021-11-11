@@ -28,8 +28,6 @@ services:
     integration_tests:
         build: integration_tests/.
         command: "npm run test"
-        security_opt:
-            - seccomp=integration_tests/chrome.json
         depends_on:
             - ui
             - web

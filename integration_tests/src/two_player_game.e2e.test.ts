@@ -7,7 +7,12 @@ import {
     clickButtonStartGame,
 } from "./helper/lobbyHelper";
 import { getLatestUrl } from "./helper/pageHelper";
-import { baseClientUrl, clickButtonPlayAi } from "./helper/rootHelper";
+import {
+    baseClientUrl,
+    clickButtonPlayAi,
+    launchPuppeteer,
+    waitForFirstPage,
+} from "./helper/rootHelper";
 
 import puppeteer from "puppeteer";
 
@@ -19,14 +24,14 @@ describe("two players", () => {
     const baseUrl = baseClientUrl();
 
     beforeAll(async () => {
-        browser = await puppeteer.launch();
+        browser = await launchPuppeteer();
         page = await browser.newPage();
         page2 = await browser.newPage();
     });
 
     it("play ai", async () => {
-        await page.goto(baseUrl);
-        await page2.goto(baseUrl); // but with differen port!
+        await waitForFirstPage(page, baseUrl);
+        await waitForFirstPage(page2, baseUrl); // but with differen port!
 
         // TODO implement rest
     });

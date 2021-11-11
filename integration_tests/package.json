@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "build": "tsc",
-        "test": "jest test --maxWorkers=1$"
+        "test": "./setup_integration_tests.sh && jest test --maxWorkers=1$"
     },
     "author": "",
     "license": "ISC",
