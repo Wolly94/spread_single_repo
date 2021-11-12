@@ -1,0 +1,17 @@
+FROM node:16 as client_production
+
+WORKDIR /usr/src/app
+
+RUN npm install -g serve
+
+COPY --from=spread_common /usr/src/app/dist /usr/src/spread_game/dist
+## this must be added or there will be error on 'npm run start'
+COPY --from=spread_common /usr/src/app/package.json /usr/src/spread_game/package.json
+
+COPY --from=spread_client /usr/src/app/build /usr/src/app/build
+COPY --from=spread_client /usr/src/app/node_modules /usr/src/app/node_modules
+COPY --from=spread_client /usr/src/app/package.json /usr/src/app/package.json
+
+EXPOSE 3000
+
+CMD [ "serve", "-s", "build" ]
