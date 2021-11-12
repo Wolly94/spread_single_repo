@@ -14,8 +14,6 @@ import {
     launchPuppeteer,
 } from "./helper/rootHelper";
 
-import puppeteer from "puppeteer";
-
 describe("single player", () => {
     let browser: Puppeteer.Browser;
     let page: Puppeteer.Page;

@@ -33,11 +33,13 @@ abstract class SocketServer<TSenderMessage, TReceiverMessage> {
     }
 
     close() {
-        this.socket.close()
+        console.log("closing websocket on port: " + this.port);
+        this.socket.close();
     }
 
     // socket now accepts connections from clients
     open() {
+        console.log("opening websocket on port: " + this.port);
         this.socket.on("connection", (socketClient, req) => {
             const token = req.url?.replace("/?token=", "");
             if (token !== undefined) {

@@ -1,14 +1,10 @@
 FROM node:16 as spread_integration_tests
 
 RUN apt-get update
-# this is used in script below
-RUN apt-get install gettext-base
+# these are used in scripts
+RUN apt-get install -y gettext-base lsof
 RUN apt-get install -y chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true    
-
-WORKDIR /usr/src/app
-
-COPY . .
 
 ## required for setup
 COPY --from=spread_common /usr/src/app/dist /usr/src/spread_game/dist
@@ -25,6 +21,10 @@ COPY --from=spread_server /usr/src/app/package.json /usr/src/server/package.json
 
 #RUN useradd test
 #USER test
+
+WORKDIR /usr/src/app
+
+COPY . .
 
 RUN npm install
 
