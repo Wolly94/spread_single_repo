@@ -2,11 +2,11 @@ import UrlResponse from "spread_game/dist/messages/general/urlResponse";
 import WebSocket from "ws";
 
 export const baseUrl = () => {
-    return process.env.BASE_URL;
-}
+    return process.env.BASE_URL || "localhost";
+};
 
 export const baseWebsocketUrl = () => {
-    return "ws://"+baseUrl();
+    return "ws://" + baseUrl();
     const nodeEnv = process.env.NODE_ENV;
     if (nodeEnv === "development") {
         return "ws://localhost";
@@ -32,8 +32,14 @@ abstract class SocketServer<TSenderMessage, TReceiverMessage> {
         this.port = port;
     }
 
+    close() {
+        console.log("closing websocket on port: " + this.port);
+        this.socket.close();
+    }
+
     // socket now accepts connections from clients
     open() {
+        console.log("opening websocket on port: " + this.port);
         this.socket.on("connection", (socketClient, req) => {
             const token = req.url?.replace("/?token=", "");
             if (token !== undefined) {

@@ -6,7 +6,7 @@ interface TokenResponse {
 }
 
 const requestToken = () => {
-    const newToken = apiRequest<TokenResponse>(API_PATH.getToken, HttpVerb.GET)
+    const newToken = apiRequest<TokenResponse>(API_PATH.getToken(), HttpVerb.GET)
     return newToken
 }
 

@@ -12,11 +12,18 @@ class FindGameServer extends SocketServer<
     FindGameServerMessage,
     ClientMessage<FindGameClientMessageData>
 > {
+    allGameServerHandler: AllGameServerHandler;
+
+    constructor(port: number, allGameServerHandler: AllGameServerHandler) {
+        super(port);
+        this.allGameServerHandler = allGameServerHandler;
+    }
+
     updateClients() {
         this.sendMessageToClients(this.getUpdateMessage());
     }
     getUpdateMessage() {
-        const openGames = AllGameServerHandler.getGameServers().map(
+        const openGames = this.allGameServerHandler.getGameServers().map(
             (gameServer, index) => {
                 const result: OpenGame = gameServer.toOpenGame();
                 return result;
@@ -43,6 +50,10 @@ class FindGameServer extends SocketServer<
             // TODO
         }
     }
+
+    getUrlResponse = () => {
+        return this.creationResponse();
+    };
 }
 
 export default FindGameServer;
