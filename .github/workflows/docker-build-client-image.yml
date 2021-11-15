@@ -29,15 +29,12 @@ jobs:
       
     - name: Build client
       run: docker build -t spread_client --file client/Dockerfile client/.
+      
+    - name: Build client for production
+      run: docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/spread_client:latest --file client/Dockerfile.Production client/.
         
-    - name: Build and push client production
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        context: ./
-        file: ./client/Dockerfile.Production
-        push: true
-        tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spread_client:latest
+    - name: Push client to Docker Hub
+      run: docker push ${{ secrets.DOCKER_HUB_USERNAME }}/spread_client:latest
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
