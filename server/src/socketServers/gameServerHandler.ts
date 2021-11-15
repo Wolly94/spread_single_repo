@@ -1,43 +1,57 @@
-import FindGameServerHandler from './findGameServerHandler'
-import SpreadGameServer from './GameServer/gameServer'
+import SpreadGameServer from "./GameServer/gameServer";
 
 class AllGameServerHandler {
-    static gameServers: [number, SpreadGameServer | null][] = Array.from(
-        { length: 10 },
-        (_, i) => [i + 3031, null],
-    )
+    gameServers: [number, SpreadGameServer | null][];
+    shutdownCallback: (() => void) | null;
 
-    static getGameServers = () => {
-        const gss = AllGameServerHandler.gameServers
+    constructor(lowerPortBound: number, upperPortBound: number) {
+        this.gameServers = Array.from(
+            { length: upperPortBound - lowerPortBound + 1 },
+            (_, i) => [lowerPortBound + i, null]
+        );
+        this.shutdownCallback = null;
+    }
+
+    closeClients() {
+        this.gameServers
             .map((val) => val[1])
             .filter((gs): gs is SpreadGameServer => gs !== null)
-        return gss
+            .forEach((gs) => gs.close());
     }
 
-    static createGameServer = () => {
-        const index = AllGameServerHandler.gameServers.findIndex(
-            (val) => val[1] === null,
-        )
-        if (index >= 0) {
-            const port = AllGameServerHandler.gameServers[index][0]
-            const gameServer = new SpreadGameServer(port)
-            gameServer.open()
-            AllGameServerHandler.gameServers[index] = [port, gameServer]
-            return gameServer.creationResponse()
-        } else return null
-    }
+    setShutdownCallback = (shutdownCallback: () => void) => {
+        this.shutdownCallback = shutdownCallback;
+    };
 
-    static shutDown = (port: number) => {
-        const index = AllGameServerHandler.gameServers.findIndex(
-            (gs) => gs[0] === port,
-        )
+    getGameServers = () => {
+        const gss = this.gameServers
+            .map((val) => val[1])
+            .filter((gs): gs is SpreadGameServer => gs !== null);
+        return gss;
+    };
+
+    createGameServer = () => {
+        const index = this.gameServers.findIndex((val) => val[1] === null);
         if (index >= 0) {
-            AllGameServerHandler.gameServers[index][1]?.shutdown()
-            AllGameServerHandler.gameServers[index][1] = null
+            const port = this.gameServers[index][0];
+            const gameServer = new SpreadGameServer(port, () =>
+                this.shutDown(port)
+            );
+            gameServer.open();
+            this.gameServers[index] = [port, gameServer];
+            return gameServer.creationResponse();
+        } else return null;
+    };
+
+    shutDown = (port: number) => {
+        const index = this.gameServers.findIndex((gs) => gs[0] === port);
+        if (index >= 0) {
+            this.gameServers[index][1]?.shutdown();
+            this.gameServers[index][1] = null;
         }
 
-        FindGameServerHandler.findGameServer?.updateClients()
-    }
+        if (this.shutdownCallback !== null) this.shutdownCallback();
+    };
 }
 
-export default AllGameServerHandler
+export default AllGameServerHandler;

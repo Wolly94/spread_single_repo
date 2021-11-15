@@ -1,0 +1,9 @@
+{
+    "preset": "jest-puppeteer",
+    "verbose": true,
+    "setupFiles": ["<rootDir>/src/index.ts"],
+    "transform": {
+        "^.+\\.jsx?$": "babel-jest",
+        "^.+\\.tsx?$": "ts-jest"
+    }
+}

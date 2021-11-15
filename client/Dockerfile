@@ -9,6 +9,6 @@ COPY --from=spread_common /usr/src/app/dist /usr/src/spread_game/dist
 COPY --from=spread_common /usr/src/app/package.json /usr/src/spread_game/package.json
 
 RUN npm install || 1
-##RUN npm run build
+RUN npm run build
 
 ENTRYPOINT []

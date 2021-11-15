@@ -2,14 +2,15 @@ version: "3.3"
 services:
     common:
         build: spread_game/.
-        command: "npm install"
+        command: "npm run test"
     web:
         build: server/.
         ports:
             - "4001:4001"
         environment:
             - PORT=4001
-        command: "npm run start"
+            - BASE_URL=localhost
+        command: "npm run test"
         depends_on:
             - common
     ui:
@@ -18,7 +19,15 @@ services:
             - "3001:3001"
         environment:
             - PORT=3001
-        command: "npm run start"
+            - REACT_APP_WEB_API_PORT=4001
+            - REACT_APP_WEB_API_BASE_URL=localhost
+        command: "npm run test"
         depends_on:
             - common
         stdin_open: true
+    integration_tests:
+        build: integration_tests/.
+        command: "npm run test"
+        depends_on:
+            - ui
+            - web

@@ -1,15 +1,11 @@
 import ClientMessage from "spread_game/dist/messages/clientMessage";
 import { OpenGame } from "spread_game/dist/messages/findGame/findGameServerMessages";
-import {
-    GameClientMessageData,
-    isClientLobbyMessage,
-} from "spread_game/dist/messages/inGame/gameClientMessages";
+import { GameClientMessageData } from "spread_game/dist/messages/inGame/gameClientMessages";
 import { GameServerMessage } from "spread_game/dist/messages/inGame/gameServerMessages";
 import {
     PlayerData,
     getPlayerData,
 } from "../../registration/registrationHandler";
-import FindGameServerHandler from "../findGameServerHandler";
 import AllGameServerHandler from "../gameServerHandler";
 import SocketServer from "../socketServer";
 import WebSocket from "ws";
@@ -27,11 +23,13 @@ class SpreadGameServer extends SocketServer<
 > {
     connectedPlayers: ConnectedPlayer[];
     gameHandler: GameServerHandler;
+    shutdownCallback: () => void;
 
     // later allow connecting other players and read data like skills accordingly
-    constructor(port: number) {
+    constructor(port: number, shutdownCallback: () => void) {
         super(port);
         this.connectedPlayers = [];
+        this.shutdownCallback = shutdownCallback;
         this.gameHandler = new GameServerHandler();
     }
 
@@ -88,7 +86,7 @@ class SpreadGameServer extends SocketServer<
         }
         this.gameHandler.disconnectClient(token);
         if (this.socket.clients.size === 0) {
-            AllGameServerHandler.shutDown(this.port);
+            this.shutdownCallback();
         }
     }
 
