@@ -7,6 +7,7 @@ use axum::{
     routing::get,
     Router,
 };
+use futures::{SinkExt, StreamExt};
 use game_finder::GameFinder;
 use matchmaker::Matchmaker;
 
@@ -90,31 +91,45 @@ async fn ws_handler(
     ws.on_upgrade(move |socket| handle_socket(socket, token, matchmaker))
 }
 
-async fn handle_socket(mut socket: WebSocket, token: String, matchmaker: Matchmaker) {
+async fn handle_socket(socket: WebSocket, token: String, matchmaker: Matchmaker) {
     let (sender, receiver) = kanal::unbounded_async::<FoundGameResponse>();
 
-    // forward message to socket and close, when game is found
+    let (mut s, mut r) = socket.split();
+
+    matchmaker.connect(token.clone(), sender).await;
+
+    // disconnect from queue if websocket connection is closed
     tokio::spawn(async move {
-        match receiver.recv().await {
-            Ok(msg) => {
-                let json = serde_json::to_string(&msg).expect("serialization should not fail");
-                socket
-                    .send(axum::extract::ws::Message::Text(json))
-                    .await
-                    .expect("Client receives message");
-                socket
-                    .send(Message::Close(Some(CloseFrame {
-                        code: close_code::NORMAL,
-                        reason: Cow::from("Found Game"),
-                    })))
-                    .await
-                    .expect("client connection can be closed");
+        loop {
+            match r.next().await {
+                Some(Ok(Message::Close(f))) => {
+                    println!("client {token} closed connection: {f:?}");
+                    matchmaker.remove(token.clone()).await;
+                }
+                Some(Ok(m)) => println!("ignored client {token} message: {m:?}"),
+                Some(Err(e)) => println!("failure receiving message from client {token}: {e}"),
+                None => {}
             }
-            Err(e) => println!("Error while waiting for message from matchmaker! {e}"),
         }
     });
 
-    matchmaker.connect(token, sender).await;
+    match receiver.recv().await {
+        Ok(msg) => {
+            let json = serde_json::to_string(&msg).expect("serialization should not fail");
+            s.send(axum::extract::ws::Message::Text(json))
+                .await
+                .expect("Client receives message");
+            s.send(Message::Close(Some(CloseFrame {
+                code: close_code::NORMAL,
+                reason: Cow::from("Found Game"),
+            })))
+            .await
+            .expect("client connection can be closed");
+        }
+        Err(e) => {
+            println!("Error while waiting for message from matchmaker! {e}")
+        }
+    }
 
     // returning from the handler closes the websocket connection
     println!("Websocket context  destroyed");

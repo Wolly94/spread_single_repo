@@ -16,6 +16,7 @@ pub struct Matchmaker {
 pub enum MessageToMatchmaker {
     FindMatch,
     AddPlayer(Player),
+    RemovePlayer { token: String },
 }
 
 impl Matchmaker {
@@ -42,6 +43,17 @@ impl Matchmaker {
         };
     }
 
+    pub async fn remove(&self, token: String) {
+        match self
+            .sender
+            .send(MessageToMatchmaker::RemovePlayer { token })
+            .await
+        {
+            Ok(_) => (),
+            Err(e) => println!("Failed to remove player! {e}"),
+        };
+    }
+
     pub async fn find_match(&self) {
         match self.sender.send(MessageToMatchmaker::FindMatch).await {
             Ok(_) => (),
@@ -55,6 +67,9 @@ impl Matchmaker {
             match self.receiver.recv().await {
                 Ok(msg) => match msg {
                     MessageToMatchmaker::AddPlayer(player) => players.push_back(player),
+                    MessageToMatchmaker::RemovePlayer { token } => {
+                        players.retain(|p| p._token != token)
+                    }
                     MessageToMatchmaker::FindMatch => {
                         if players.len() >= 2 {
                             let response = game_finder.find_game();
