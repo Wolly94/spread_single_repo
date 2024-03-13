@@ -13,10 +13,7 @@ use matchmaker::Matchmaker;
 
 use std::{borrow::Cow, time::Duration};
 use std::{net::SocketAddr, path::PathBuf};
-use tower_http::{
-    services::ServeDir,
-    trace::{DefaultMakeSpan, TraceLayer},
-};
+use tower_http::services::ServeDir;
 
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -50,11 +47,12 @@ async fn main() {
         .route("/join-queue/:token", get(ws_handler))
         .with_state(matchmaker.clone())
         .with_state(game_finder.clone())
-        // logging so we can see whats going on
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::default().include_headers(true)),
-        );
+        //// logging so we can see whats going on
+        //.layer(
+        //    TraceLayer::new_for_http()
+        //        .make_span_with(DefaultMakeSpan::default().include_headers(true)),
+        //)
+        ;
 
     let mm2 = matchmaker.clone();
     tokio::spawn(async move {
@@ -99,16 +97,22 @@ async fn handle_socket(socket: WebSocket, token: String, matchmaker: Matchmaker)
     matchmaker.connect(token.clone(), sender).await;
 
     // disconnect from queue if websocket connection is closed
+    let t2 = token.clone();
+    let m2 = matchmaker.clone();
     tokio::spawn(async move {
         loop {
             match r.next().await {
                 Some(Ok(Message::Close(f))) => {
-                    println!("client {token} closed connection: {f:?}");
-                    matchmaker.remove(token.clone()).await;
+                    println!("client {t2} closed connection: {f:?}");
+                    m2.remove(t2.clone()).await;
+                    break;
                 }
-                Some(Ok(m)) => println!("ignored client {token} message: {m:?}"),
-                Some(Err(e)) => println!("failure receiving message from client {token}: {e}"),
-                None => {}
+                Some(Ok(m)) => println!("ignored client {t2} message: {m:?}"),
+                Some(Err(e)) => {
+                    println!("failure receiving message from client {t2}: {e}");
+                    break;
+                }
+                None => break,
             }
         }
     });
@@ -127,10 +131,11 @@ async fn handle_socket(socket: WebSocket, token: String, matchmaker: Matchmaker)
             .expect("client connection can be closed");
         }
         Err(e) => {
-            println!("Error while waiting for message from matchmaker! {e}")
+            println!("Error while waiting for message from matchmaker! {e}");
         }
     }
 
+    matchmaker.remove(token.clone()).await;
     // returning from the handler closes the websocket connection
-    println!("Websocket context  destroyed");
+    println!("closing connection to {token}");
 }

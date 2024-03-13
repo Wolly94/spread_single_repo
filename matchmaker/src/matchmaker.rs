@@ -2,8 +2,9 @@ use std::collections::VecDeque;
 
 use crate::game_finder::{FoundGameResponse, GameFinder};
 
+#[derive(Debug)]
 pub struct Player {
-    _token: String,
+    token: String,
     sender: kanal::AsyncSender<FoundGameResponse>,
 }
 
@@ -13,6 +14,7 @@ pub struct Matchmaker {
     receiver: kanal::AsyncReceiver<MessageToMatchmaker>,
 }
 
+#[derive(Debug)]
 pub enum MessageToMatchmaker {
     FindMatch,
     AddPlayer(Player),
@@ -33,7 +35,7 @@ impl Matchmaker {
         match self
             .sender
             .send(MessageToMatchmaker::AddPlayer(Player {
-                _token: token,
+                token,
                 sender: player_sender,
             }))
             .await
@@ -62,32 +64,44 @@ impl Matchmaker {
     }
 
     pub async fn run(&self, game_finder: GameFinder) {
-        let mut players = VecDeque::new();
+        let mut players = VecDeque::<Player>::new();
         loop {
             match self.receiver.recv().await {
-                Ok(msg) => match msg {
-                    MessageToMatchmaker::AddPlayer(player) => players.push_back(player),
-                    MessageToMatchmaker::RemovePlayer { token } => {
-                        players.retain(|p| p._token != token)
-                    }
-                    MessageToMatchmaker::FindMatch => {
-                        if players.len() >= 2 {
-                            let response = game_finder.find_game();
-                            let player1 = players.pop_front().expect("at least 2 elements");
-                            let player2 = players.pop_front().expect("at least 1 element");
-                            player1
-                                .sender
-                                .send(response.clone())
-                                .await
-                                .expect("client still here");
-                            player2
-                                .sender
-                                .send(response)
-                                .await
-                                .expect("client still here");
+                Ok(msg) => {
+                    println!("Processing message {msg:?}");
+                    match msg {
+                        MessageToMatchmaker::AddPlayer(player) => {
+                            if let Some(ex) = players.iter_mut().find(|p| p.token == player.token) {
+                                println!("Found new connection of {}", player.token);
+                                ex.sender = player.sender;
+                            } else {
+                                players.push_back(player);
+                                println!("Currently {} players queueing", players.len());
+                            }
+                        }
+                        MessageToMatchmaker::RemovePlayer { token } => {
+                            players.retain(|p| p.token != token);
+                            println!("Currently {} players queueing", players.len());
+                        }
+                        MessageToMatchmaker::FindMatch => {
+                            if players.len() >= 2 {
+                                let response = game_finder.find_game();
+                                let player1 = players.pop_front().expect("at least 2 elements");
+                                let player2 = players.pop_front().expect("at least 1 element");
+                                player1
+                                    .sender
+                                    .send(response.clone())
+                                    .await
+                                    .expect("client still here");
+                                player2
+                                    .sender
+                                    .send(response)
+                                    .await
+                                    .expect("client still here");
+                            }
                         }
                     }
-                },
+                }
                 Err(e) => println!("Failed to receive message for Matchmaker! {e}"),
             }
         }
