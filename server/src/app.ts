@@ -5,6 +5,7 @@ import { registerUser } from "./registration/registrationHandler";
 import FindGameServer from "./socketServers/findGameServer";
 import AllGameServerHandler from "./socketServers/gameServerHandler";
 import { baseUrl } from "./socketServers/socketServer";
+import { MatchmakingGameRequest } from "./models/MatchmakingGameRequest";
 
 export interface App {
     close: () => void;
@@ -52,6 +53,13 @@ export const createAndStartServer = (
     app.get("/find-game", (req, res) => {
         const data = findGameServer.getUrlResponse();
         res.send(data);
+    });
+
+    app.post("/matchmaking-game", (req, res) => {
+        const data = req.body as MatchmakingGameRequest;
+        // TODO add support for matchmaking games
+        // parse MatchmakingGameRequest
+        // return MatchmakingGameResponse
     });
 
     app.get("/token", (req, res) => {

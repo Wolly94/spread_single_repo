@@ -6,16 +6,10 @@ import {
     PlayerData,
     getPlayerData,
 } from "../../registration/registrationHandler";
-import AllGameServerHandler from "../gameServerHandler";
 import SocketServer from "../socketServer";
 import WebSocket from "ws";
 import { GameServerHandler } from "spread_game/dist/communication/gameServerHandler/GameServerHandler";
-
-interface ConnectedPlayer {
-    token: string;
-    socket: WebSocket;
-    playerData: PlayerData;
-}
+import { ConnectedPlayer } from "./ConnectedPlayer";
 
 class SpreadGameServer extends SocketServer<
     GameServerMessage,
