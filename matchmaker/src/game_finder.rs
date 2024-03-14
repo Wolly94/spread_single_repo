@@ -2,7 +2,7 @@ use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Serialize, Clone)]
+#[derive(Serialize, Clone, Debug)]
 pub struct FoundGameResponse {
     id: String,
     url: String,
@@ -39,7 +39,7 @@ impl GameFinder {
         let client = reqwest::Client::new();
         let request = CreateMatchmakingGameRequest { tokens };
         let res = client
-            .post(&self.gameserver_api_url)
+            .post(&(self.gameserver_api_url.clone() + "matchmaking-game"))
             .json(&request)
             .send()
             .await
@@ -51,7 +51,10 @@ impl GameFinder {
             let resp = res
                 .json::<CreatedMatchmakingGameResponse>()
                 .await
-                .map_err(|_| FindGameError::FailedToDeserializeBody)?;
+                .map_err(|e| {
+                    println!("Failed to deserialize body: {e}");
+                    FindGameError::FailedToDeserializeBody
+                })?;
 
             Ok(FoundGameResponse {
                 id: Uuid::new_v4().into(),
@@ -60,3 +63,18 @@ impl GameFinder {
         }
     }
 }
+
+//#[cfg(test)]
+//mod tests {
+//    use super::GameFinder;
+//
+//    #[tokio::test]
+//    pub async fn test_find_game() {
+//        let gf = GameFinder::new("http://localhost:8081/".into());
+//
+//        let res = gf.find_game(vec!["123".into(), "234".into()]).await;
+//        println!("{res:?}");
+//        assert!(res.is_ok());
+//    }
+//}
+//

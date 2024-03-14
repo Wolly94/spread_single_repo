@@ -113,7 +113,9 @@ impl Matchmaker {
                                         }
                                     }
                                     Err(e) => {
-                                        println!("Failed to find game due to `{e:?}`")
+                                        println!("Failed to find game due to `{e:?}`");
+                                        players.push_front(player2);
+                                        players.push_front(player1);
                                     }
                                 }
                             }
