@@ -86,7 +86,7 @@ class LobbyImplementation implements Lobby {
         } else return null;
     }
 
-    // returns tuple whose first element determines wether clients need an update,
+    // returns tuple whose first element determines whether clients need an update,
     // and the second argument only to the sender
     onReceiveMessage(
         token: string,
