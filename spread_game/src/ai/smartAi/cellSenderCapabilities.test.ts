@@ -50,8 +50,8 @@ test("cell sender caps with no collisions", () => {
     const senderCaps = new CellSenderCapabilityImplementation(futureCells);
     const cap1 = senderCaps.get(0);
     const cap2 = senderCaps.get(1);
-    expect(cap1.timeline.length).toBe(1);
-    expect(cap2.timeline.length).toBe(0);
+    expect(cap1?.timeline.length).toBe(1);
+    expect(cap2?.timeline.length).toBe(0);
 });
 
 test("cell sender caps with collisions", () => {
@@ -92,7 +92,7 @@ test("cell sender caps with collisions", () => {
     const cap0 = senderCaps.get(0);
     const cap1 = senderCaps.get(1);
     const cap2 = senderCaps.get(2);
-    expect(cap0.timeline.length).toBe(1);
-    expect(cap1.timeline.length).toBe(0);
-    expect(cap2.timeline.length).toBe(2);
+    expect(cap0?.timeline.length).toBe(1);
+    expect(cap1?.timeline.length).toBe(0);
+    expect(cap2?.timeline.length).toBe(2);
 });

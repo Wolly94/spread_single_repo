@@ -45,8 +45,8 @@ test("scrape off vs basic", () => {
     const cstate2 = game2.toClientGameState();
     const cell21 = cstate1.cells.find((c) => c.id === 1);
     const cell22 = cstate2.cells.find((c) => c.id === 1);
-    expect(cell21.playerId).toBe(1);
-    expect(cell22.playerId).toBe(1);
+    expect(cell21?.playerId).toBe(1);
+    expect(cell22?.playerId).toBe(1);
     expect(cell21?.data?.units).toBeCloseTo(
         cell22 === undefined || cell22.data === null ? -1 : cell22.data.units,
         5
