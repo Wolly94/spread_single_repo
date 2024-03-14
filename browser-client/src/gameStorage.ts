@@ -14,3 +14,7 @@ export const getGame = () => {
 export const setGame = (game: FoundGameResponse) => {
     localStorage.setItem(GAME_KEY, JSON.stringify(game));
 };
+
+export const unsetGame = () => {
+  localStorage.removeItem(GAME_KEY)
+};

@@ -6,13 +6,19 @@ import { GameState } from "./models/gameStateMessage";
 import { isLeft } from "fp-ts/lib/Either";
 import { getPlayerId } from "./playerIdStorage";
 import { MessageToServer } from "./models/messageToServer";
+import { getGame } from "./gameStorage";
 
 export const Game = () => {
-  const url = "ws://localhost:5000/";
-  const gameId = "abcdefg";
+  const game = getGame();
+  if (game === null) {
+    console.log("no game found, redirecting to start page")
+    window.location.href = '/';
+    return
+  }
+  const url = game?.url
   const playerId = getPlayerId();
 
-  const ws = createWS(`${url}game/${gameId}/${playerId}`);
+  const ws = createWS(`${url}?token=${playerId}`);
   ws.addEventListener("message", (ev) => {
     const parsed = JSON.parse(ev.data);
     const decoded = MessageFromServer.decode(parsed);

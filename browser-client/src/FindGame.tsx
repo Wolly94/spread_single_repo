@@ -3,6 +3,7 @@ import { matchmakingApiUrl } from "./env";
 import { getPlayerId } from "./playerIdStorage";
 import { Match, Show, Switch, createEffect, createSignal, onCleanup } from "solid-js";
 import { FoundGameResponse } from "./foundGameResponse";
+import { getGame, setGame, unsetGame } from "./gameStorage";
 
 enum ConnectionState {
   Connecting = 1,
@@ -21,6 +22,8 @@ export const FindGame = () => {
   const [waitingInSeconds, setWaitingInSeconds] = createSignal(0);
   const [intervalId, setIntervalId] = createSignal<number | null>(null);
 
+  const game = getGame();
+
   createEffect(() => {
     if (connected() && intervalId() === null) {
         const id = window.setInterval(function(){
@@ -33,7 +36,8 @@ export const FindGame = () => {
   ws.addEventListener("message", (ev) => {
     const m = ev.data as FoundGameResponse;
     console.log("found game: " + m)
-    window.location.href = '/game/';
+    setGame(m);
+    joinGame();
   
     if (ws !== null) {
       ws.close()
@@ -50,16 +54,33 @@ export const FindGame = () => {
 
   onCleanup(() => {stop()});
 
+  const joinGame = () => {
+    window.location.href = '/game/';
+  }
+
+  const cancelGame = () => {
+    // TODO properly signal to server, that you left!
+    unsetGame();
+  }
+
   return (
     <>
-    <Switch fallback={<p>Something is off!</p>}>
-      <Match when={connected()}>
-        <p>Waiting since {waitingInSeconds()}</p>
-      </Match>
-      <Match when={!connected()}>
-        <p>Server is not running, try again later</p>
-      </Match>
-    </Switch>
+    <Show when={game === null} fallback={
+      <>
+        You are still in a running game
+        <button onClick={joinGame}>Rejoin</button>
+        <button onClick={cancelGame}>Cancel</button>
+      </>
+    }>
+      <Switch fallback={<p>Something is off!</p>}>
+        <Match when={connected()}>
+          <p>Waiting since {waitingInSeconds()}</p>
+        </Match>
+        <Match when={!connected()}>
+          <p>Server is not running, try again later</p>
+        </Match>
+      </Switch>
+    </Show>
     </>
   )
 }
