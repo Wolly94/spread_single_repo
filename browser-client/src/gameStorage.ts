@@ -1,3 +1,4 @@
+import { isLeft } from 'fp-ts/lib/Either';
 import { FoundGameResponse } from './foundGameResponse';
 
 const GAME_KEY = "game";
@@ -7,7 +8,15 @@ export const getGame = () => {
     return null
   }
   else {
-    return JSON.parse(game) as FoundGameResponse;
+    let parsed = JSON.parse(game);
+    let decoded = FoundGameResponse.decode(parsed);
+    if (isLeft(decoded)) {
+      console.log(`Failed to parse FoundGameResponse ${parsed}`);
+      console.log(`error is : ${JSON.stringify(decoded.left)}`)
+      return null;
+    } else {
+      return decoded.right
+    }
   }
 };
 

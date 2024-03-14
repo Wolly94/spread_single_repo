@@ -1,6 +1,6 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { Canvas } from "./Canvas";
-import { createWS } from "@solid-primitives/websocket";
+import { createReconnectingWS, createWS } from "@solid-primitives/websocket";
 import { MessageFromServer } from "./models/messageFromServer";
 import { GameState } from "./models/gameStateMessage";
 import { isLeft } from "fp-ts/lib/Either";
@@ -15,10 +15,17 @@ export const Game = () => {
     window.location.href = '/';
     return
   }
-  const url = game?.url
+  const url = game.url
   const playerId = getPlayerId();
 
-  const ws = createWS(`${url}?token=${playerId}`);
+  console.log(`connecting with ${url}`);
+  const ws = createReconnectingWS(`${url}?token=${playerId}`);
+  ws.addEventListener("close", (ev) => {
+    console.log(`client received close event ${JSON.stringify(ev)}`)
+  })
+  ws.addEventListener("error", (ev) => {
+    console.log(`received error ${ev}`)
+  })
   ws.addEventListener("message", (ev) => {
     const parsed = JSON.parse(ev.data);
     const decoded = MessageFromServer.decode(parsed);
@@ -27,7 +34,7 @@ export const Game = () => {
     } else {
       const msg = decoded.right;
       if (msg.type === "GameState") {
-        //console.log("set gamestate: ", msg.content);
+        console.log("set gamestate: ", msg.content);
         setGameState(msg.content);
       } else if (msg.type === "InitClient") {
         console.log("init player:", msg.content);

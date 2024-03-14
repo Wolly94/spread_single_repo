@@ -4,6 +4,7 @@ import { getPlayerId } from "./playerIdStorage";
 import { Match, Show, Switch, createEffect, createSignal, onCleanup } from "solid-js";
 import { FoundGameResponse } from "./foundGameResponse";
 import { getGame, setGame, unsetGame } from "./gameStorage";
+import { isLeft } from "fp-ts/lib/Either";
 
 enum ConnectionState {
   Connecting = 1,
@@ -34,13 +35,17 @@ export const FindGame = () => {
   })
   
   ws.addEventListener("message", (ev) => {
-    const m = ev.data as FoundGameResponse;
+    const m = FoundGameResponse.decode(JSON.parse(ev.data));
     console.log("found game: " + m)
-    setGame(m);
-    joinGame();
+    if (isLeft(m)) {
+      console.log(`Invalid format from matchmaker! ${ev.data}`)
+    } else {
+      setGame(m.right);
+      joinGame();
   
-    if (ws !== null) {
-      ws.close()
+      if (ws !== null) {
+        ws.close()
+      }
     }
   });
 

@@ -61,10 +61,10 @@ abstract class SocketServer<TSenderMessage, TReceiverMessage> {
                     this.onReceiveMessage(socketClient, m, token);
                 });
                 // gets fired on close
-                socketClient.on("close", () => {
+                socketClient.on("close", (ev) => {
                     this.onDisconnect(socketClient, token);
                     this.tokenClients.delete(token);
-                    console.log("closed");
+                    console.log(`closed due to ${JSON.stringify(ev)}`);
                     console.log(
                         "Number of clients: ",
                         this.socket.clients.size
