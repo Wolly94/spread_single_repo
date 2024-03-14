@@ -1,5 +1,7 @@
 use std::collections::VecDeque;
 
+use futures::TryFutureExt;
+
 use crate::game_finder::{FoundGameResponse, GameFinder};
 
 #[derive(Debug)]
@@ -85,19 +87,35 @@ impl Matchmaker {
                         }
                         MessageToMatchmaker::FindMatch => {
                             if players.len() >= 2 {
-                                let response = game_finder.find_game();
                                 let player1 = players.pop_front().expect("at least 2 elements");
                                 let player2 = players.pop_front().expect("at least 1 element");
-                                player1
-                                    .sender
-                                    .send(response.clone())
-                                    .await
-                                    .expect("client still here");
-                                player2
-                                    .sender
-                                    .send(response)
-                                    .await
-                                    .expect("client still here");
+                                let matched = vec![player1.token.clone(), player2.token.clone()];
+                                let response = game_finder.find_game(matched).await;
+                                match response {
+                                    Ok(res) => {
+                                        let sent = player1
+                                            .sender
+                                            .send(res.clone())
+                                            .and_then(|()| player2.sender.send(res.clone()))
+                                            .await;
+                                        match sent {
+                                            Ok(_) => {
+                                                players.retain(|p| {
+                                                    p.token != player1.token
+                                                        && p.token != player2.token
+                                                });
+                                            }
+                                            Err(e) => {
+                                                println!("Failed to contact players about found match due to `{e}`");
+                                                players.push_front(player2);
+                                                players.push_front(player1);
+                                            }
+                                        }
+                                    }
+                                    Err(e) => {
+                                        println!("Failed to find game due to `{e:?}`")
+                                    }
+                                }
                             }
                         }
                     }

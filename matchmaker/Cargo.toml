@@ -5,10 +5,12 @@ edition = "2021"
 
 [dependencies]
 axum = { version = "0.7.4", features = ["ws"] }
+dotenv = "0.15.0"
 futures = "0.3"
 futures-util = { version = "0.3", default-features = false, features = ["sink", "std"] }
 headers = "0.4"
 kanal = "0.1.0-pre8"
+reqwest = {version = "0.11.26", features = ["json"]}
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.114"
 tokio = { version = "1.0", features = ["full"] }

@@ -23,13 +23,19 @@ use axum::extract::ws::CloseFrame;
 
 use crate::game_finder::FoundGameResponse;
 
+use dotenv::dotenv;
+
 mod game_finder;
 mod matchmaker;
 
 #[tokio::main]
 async fn main() {
+    dotenv().ok();
     let matchmaker = Matchmaker::new();
-    let game_finder = GameFinder {};
+    let game_finder = GameFinder::new(
+        std::env::var("GAMESERVER_API")
+            .expect("gameserver api must be configured to create a game"),
+    );
 
     tracing_subscriber::registry()
         .with(
@@ -67,7 +73,8 @@ async fn main() {
     });
 
     // run it with hyper
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:8000")
+    let port = std::env::var("PORT").expect("PORT must be configured");
+    let listener = tokio::net::TcpListener::bind(format!("127.0.0.1:{port}"))
         .await
         .unwrap();
     tracing::debug!("listening on {}", listener.local_addr().unwrap());
