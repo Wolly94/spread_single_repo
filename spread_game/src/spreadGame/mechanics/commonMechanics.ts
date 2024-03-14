@@ -56,6 +56,9 @@ export const fightBubblePartial = (
             return [radiusToUnits(ra), radiusToUnits(dist - ra)];
         } else {
             const alpha = deltaMod / (2 * dist * bm);
+            if (Math.abs(alpha) < 0.1) {
+                return [att, def]
+            }
             const ra =
                 -1 / (2 * alpha) +
                 Math.sqrt(beta / alpha + 1 / (4 * alpha ** 2));

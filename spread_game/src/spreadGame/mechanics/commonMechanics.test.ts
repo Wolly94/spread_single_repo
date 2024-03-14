@@ -1,5 +1,5 @@
 import Bubble, { createBubble, getNewBubbleIndex } from "../bubble";
-import { approaching, centerOverlap, fight } from "./commonMechanics";
+import { approaching, centerOverlap, fight, fightBubblePartial } from "./commonMechanics";
 
 test("approaching", () => {
     const setupBubble = (
@@ -96,3 +96,16 @@ test("fight with modifiers", () => {
         expect(fPlusDefense).toBeCloseTo(rPlusDefense[index]);
     });
 });
+
+test("exploding bubble units", () => {
+    const att = 4.100000000000006;
+    const def = 3;
+    const am = 1;
+    const bm = 1.3;
+    const dist = 23.41304503957212;
+
+    const [anew, bnew] = fightBubblePartial(att, def, am, bm, dist);
+
+    expect(anew).toBeLessThan(att);
+    expect(bnew).toBeLessThan(def);
+})
