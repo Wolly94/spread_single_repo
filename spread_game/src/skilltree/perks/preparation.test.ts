@@ -87,6 +87,6 @@ test("no preparation on neutral cells", () => {
     var cstate = game.toClientGameState(null);
     var cell0 = cstate.cells.find((c) => c.id === 0);
     var cell1 = cstate.cells.find((c) => c.id === 1);
-    expect(cell0.data.defenderCombatAbilities).toBeGreaterThan(0);
-    expect(cell1.data.defenderCombatAbilities).toBe(0);
+    expect(cell0?.data?.defenderCombatAbilities).toBeGreaterThan(0);
+    expect(cell1?.data?.defenderCombatAbilities).toBe(0);
 });

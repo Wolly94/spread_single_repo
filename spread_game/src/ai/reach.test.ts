@@ -51,16 +51,16 @@ test("test reach for different settings", () => {
     expect(reachBasic).not.toBe(null);
     expect(reachScrape).not.toBe(null);
     expect(reachBounce).not.toBe(null);
-    if (reachBasic.type === "basic") {
+    if (reachBasic?.type === "basic") {
         expect(reachBasic.maxSendableUnits).toBe(radiusToUnits(40));
     }
-    if (reachScrape.type === "scratch") {
+    if (reachScrape?.type === "scratch") {
         expect(reachScrape.maxReceivableUnits).toBeCloseTo(
             radiusToUnits(20),
             1
         );
     }
-    if (reachBounce.type === "bounce") {
+    if (reachBounce?.type === "bounce") {
         expect(reachBounce.absoluteUnitLoss).toBe(2);
     }
 });

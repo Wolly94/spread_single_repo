@@ -67,11 +67,11 @@ test("capture camouflaged cell", () => {
     game.run(1000, 25);
     var cstate = game.toClientGameState(0);
     var cell1 = cstate.cells.find((c) => c.id === 1);
-    expect(cell1.data).toBe(null);
+    expect(cell1!.data).toBe(null);
     game.sendUnits(0, [0], 1);
     game.run(4000, 25);
     cstate = game.toClientGameState(0);
     cell1 = cstate.cells.find((c) => c.id === 1);
-    expect(cell1.playerId).toBe(0);
-    expect(cell1.data).not.toBe(null);
+    expect(cell1!.playerId).toBe(0);
+    expect(cell1!.data).not.toBe(null);
 });
