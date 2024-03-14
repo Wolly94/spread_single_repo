@@ -57,9 +57,14 @@ export const createAndStartServer = (
 
     app.post("/matchmaking-game", (req, res) => {
         const data = req.body as MatchmakingGameRequest;
-        // TODO add support for matchmaking games
-        // parse MatchmakingGameRequest
-        // return MatchmakingGameResponse
+        const response = allGameServerHandler.createMatchmakingGameServer(data.tokens);
+
+        if (response === null) {
+            res.statusCode = 400;
+            res.send({ message: "Couldnt create game server" });
+        } else {
+            res.send(response);
+        }
     });
 
     app.get("/token", (req, res) => {

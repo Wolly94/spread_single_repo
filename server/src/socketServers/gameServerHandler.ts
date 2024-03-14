@@ -1,7 +1,8 @@
 import SpreadGameServer from "./GameServer/gameServer";
+import { SpreadMatchmakingServer } from "./matchmaking/matchmakingServer";
 
 class AllGameServerHandler {
-    gameServers: [number, SpreadGameServer | null][];
+    gameServers: [number, SpreadGameServer | SpreadMatchmakingServer | null][];
     shutdownCallback: (() => void) | null;
 
     constructor(lowerPortBound: number, upperPortBound: number) {
@@ -35,6 +36,19 @@ class AllGameServerHandler {
         if (index >= 0) {
             const port = this.gameServers[index][0];
             const gameServer = new SpreadGameServer(port, () =>
+                this.shutDown(port)
+            );
+            gameServer.open();
+            this.gameServers[index] = [port, gameServer];
+            return gameServer.creationResponse();
+        } else return null;
+    };
+
+    createMatchmakingGameServer = (matchedClients: string[]) => {
+        const index = this.gameServers.findIndex((val) => val[1] === null);
+        if (index >= 0) {
+            const port = this.gameServers[index][0];
+            const gameServer = new SpreadMatchmakingServer(port, matchedClients, () =>
                 this.shutDown(port)
             );
             gameServer.open();
