@@ -39,7 +39,7 @@ export type PropUtils<TProps> = {
 	default: TProps;
 };
 
-export type NewSpreadGameEvent =
+export type SpreadGameEvent =
 	| TimeStepEvent
 	| StartGameEvent
 	| CreateBubbleEvent

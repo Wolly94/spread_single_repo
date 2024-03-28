@@ -3,7 +3,7 @@ import Bubble from "../../spreadGame/bubble";
 import { unitsToRadius } from "../../spreadGame/common";
 import {
 	AttachProps,
-	NewSpreadGameEvent,
+	SpreadGameEvent,
 	TimedProps,
 } from "../../spreadGame/mechanics/events/definitions";
 import { BubbleFightProps } from "../../spreadGame/mechanics/events/fight";
@@ -28,7 +28,7 @@ const defaultValues: [number, number][] = [
 const currentAttacksSent = (
 	toleratedTimeSpan: number,
 	attacker: Bubble,
-	eventHistory: HistoryEntry<NewSpreadGameEvent>[]
+	eventHistory: HistoryEntry<SpreadGameEvent>[]
 ) => {
 	const attacksSentBeforeCreation = eventHistory.filter(
 		(ev) =>

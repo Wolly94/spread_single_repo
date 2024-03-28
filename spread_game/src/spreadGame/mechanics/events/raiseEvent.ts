@@ -1,4 +1,4 @@
-import { NewSpreadGameEvent, SpreadGameEffect } from "./definitions";
+import { SpreadGameEvent, SpreadGameEffect } from "./definitions";
 import { InfectEffect, InfectEvent } from "./infect";
 import { StolenPerkEffect, StolenPerkEvent } from "./stolenPerk";
 
@@ -12,7 +12,7 @@ export type RaiseEventProps = {
 export type RaiseEventEffect = StolenPerkEffect | InfectEffect;
 
 export const isRaisableEvent = (
-	event: NewSpreadGameEvent
+	event: SpreadGameEvent
 ): event is RaisableEvent => {
 	return event.type === "StolenPerk" || event.type === "Infect";
 };

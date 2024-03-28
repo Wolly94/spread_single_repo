@@ -36,7 +36,7 @@ import { defendCellUtils } from "./mechanics/events/defendCell";
 import {
 	AttachProps,
 	Entity,
-	NewSpreadGameEvent,
+	SpreadGameEvent,
 	SpreadGameProps,
 	TimedProps,
 } from "./mechanics/events/definitions";
@@ -117,7 +117,7 @@ export class SpreadGameImplementation implements SpreadGame {
 	pastMoves: HistoryEntry<Move>[];
 	mechanics: SpreadGameMechanics;
 	timePassed: number;
-	eventHistory: HistoryEntry<NewSpreadGameEvent>[];
+	eventHistory: HistoryEntry<SpreadGameEvent>[];
 	perks: GeneralPerk[];
 	attachedProps: AttachProps<TimedProps<SpreadGameProps>>[];
 
@@ -228,7 +228,7 @@ export class SpreadGameImplementation implements SpreadGame {
 
 	// attaches every prop that is supposed to be attached
 	// and returns all other props
-	handleEvent(event: NewSpreadGameEvent) {
+	handleEvent(event: SpreadGameEvent) {
 		const props = this.perks.flatMap((perk) => {
 			return perk.triggers.flatMap((tr) => {
 				if (tr.type === "StartGame" && event.type === "StartGame") {
@@ -472,7 +472,7 @@ export class SpreadGameImplementation implements SpreadGame {
 	}
 	// this either adds a FightEvent or a PartialFightEvent or modifies a PartialFightEvent in the event history
 	processFight(before: BeforeCollisionState, after: AfterCollisionState) {
-		const eventsToAdd: NewSpreadGameEvent[] = [];
+		const eventsToAdd: SpreadGameEvent[] = [];
 		let existingPartialCollisionEvent: CollisionEvent | undefined =
 			this.eventHistory.find(
 				(ev): ev is HistoryEntry<CollisionEvent> =>
@@ -630,7 +630,7 @@ export class SpreadGameImplementation implements SpreadGame {
 		return result;
 	}
 	sendUnits(playerId: number, senderIds: number[], receiverId: number) {
-		const eventsToAdd: NewSpreadGameEvent[] = [];
+		const eventsToAdd: SpreadGameEvent[] = [];
 		const player = this.players.find((p) => p.id == playerId);
 		if (player == undefined) return false;
 		const targetCell = this.cells.find((c) => c.id == receiverId);

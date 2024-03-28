@@ -13,7 +13,7 @@ import {
 	VisualizeCellProps,
 	visualizeCellUtils,
 } from "../../spreadGame/mechanics/events/visualizeCellProps";
-import { NewSpreadGameEvent } from "../../spreadGame/mechanics/events/definitions";
+import { SpreadGameEvent } from "../../spreadGame/mechanics/events/definitions";
 import { formatDescription } from "../utils";
 import { CreatePerk, getPerkValue } from "./perk";
 
@@ -26,7 +26,7 @@ const defaultValue: [number, number] = [0, 0];
 
 const latestMoveTimeStamp = (
 	cell: Cell,
-	eventHistory: HistoryEntry<NewSpreadGameEvent>[]
+	eventHistory: HistoryEntry<SpreadGameEvent>[]
 ): number => {
 	const lastAttackSent = eventHistory
 		.filter(
